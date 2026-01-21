@@ -56,7 +56,7 @@ def run(year: int, zips: list[str]):
     for z in zips:
         payload = fetch_acs_zcta(year, z, variables)
         save_raw_acs(z, year, variables, payload)
-        print(f"ACS saved raw for {z} ({year})")
+        print(f"✅ ACS saved raw for {z} ({year})")
 
 if __name__ == "__main__":
     run(2023, [ 92672, 92673, 92624, 92675, 92629 ])
