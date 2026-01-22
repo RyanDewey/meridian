@@ -1,13 +1,23 @@
+from extract.fetch_acs import fetch_acs_zcta
+from pipeline.run_sql import run_sql_dir
+
 
 # Main function to call all other functions
 def run_pipeline():
     pass
-    # demographic_raw_df = get_demographic_data(zip_codes)
-    # business_raw_df = get_business_data(zip_codes)
 
-    # population_df = clean_population_data(population_raw_df)
-    # demographic_df = clean_demographic_data(demographic_raw_df)
-    # business_df = clean_business_data(business_raw_df)
+
+    
+
+    sql_steps = [
+        "03_make_poi_geom.sql",
+        "04_spatial_join_poi_to_zcta.sql",
+        "05_compute_competitors.sql",
+        "06_compute_demand.sql",
+    ]
+
+    run_sql_dir("sql", sql_steps)
+
 
 if __name__ == "__main__":
     run_pipeline()
