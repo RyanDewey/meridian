@@ -3,7 +3,7 @@ import json
 from typing import Any, Dict, Optional, Tuple, List
 from dotenv import load_dotenv
 
-from pipeline.db import get_conn
+from db import get_conn
 
 load_dotenv()
 

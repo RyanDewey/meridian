@@ -1,72 +1,90 @@
 -- Initialize schema script
--- RAW: store unmodified responses
-create table if not exists raw_acs_zip (
-  id bigserial primary key,
-  zip text not null,
-  year int not null,
-  variables text[] not null,
-  pulled_at timestamptz not null default now(),
-  payload jsonb not null
+-- RAW: ACS
+CREATE TABLE IF NOT EXISTS raw_acs_zip (
+  id bigserial PRIMARY KEY,
+  zip text NOT NULL,
+  year int NOT NULL,
+  variables text[] NOT NULL,
+  pulled_at timestamptz NOT NULL DEFAULT now(),
+  payload jsonb NOT NULL
 );
 
--- STAGING: cleaned, typed, consistent columns
-create table if not exists stg_acs_zip (
-  zip text not null,
-  year int not null,
-  population int,
-  median_household_income int,
-  primary key (zip, year)
-);
-
-create table if not exists raw_overpass_query (
-  id bigserial primary key,
-  source text not null default 'overpass',
-  query_name text not null,                 -- e.g. "chinese_restaurants_san_clemente_bbox"
-  query_text text not null,                 -- the actual Overpass QL
-  query_params jsonb not null default '{}'::jsonb,  -- bbox, tags, etc.
-  query_hash text not null,                 -- sha256(query_text + params)
+-- RAW: Overpass
+CREATE TABLE IF NOT EXISTS raw_overpass_query (
+  id bigserial PRIMARY KEY,
+  source text NOT NULL DEFAULT 'overpass',
+  query_name text NOT NULL,
+  query_text text NOT NULL,
+  query_params jsonb NOT NULL DEFAULT '{}'::jsonb,
+  query_hash text NOT NULL,
   status_code int,
-  pulled_at timestamptz not null default now(),
+  pulled_at timestamptz NOT NULL DEFAULT now(),
   duration_ms int,
   response_bytes int,
-  payload jsonb                              -- raw Overpass JSON (nullable if failed)
+  payload jsonb
 );
 
-create index if not exists idx_raw_overpass_query_hash
-  on raw_overpass_query (query_hash);
+CREATE INDEX IF NOT EXISTS idx_raw_overpass_query_hash
+  ON raw_overpass_query (query_hash);
 
-create index if not exists idx_raw_overpass_query_pulled_at
-  on raw_overpass_query (pulled_at desc);
+CREATE INDEX IF NOT EXISTS idx_raw_overpass_query_pulled_at
+  ON raw_overpass_query (pulled_at desc);
 
+-- STAGING: ACS
+CREATE TABLE IF NOT EXISTS stg_acs_zip (
+  zip text NOT NULL,
+  year int NOT NULL,
+  population int,
+  median_household_income int,
+  PRIMARY KEY (zip, year)
+);
 
-create table if not exists stg_osm_poi (
-  osm_type text not null,                 -- node | way | relation
-  osm_id bigint not null,
+-- STAGING: OSM POIs
+CREATE TABLE IF NOT EXISTS stg_osm_poi (
+  osm_type text NOT NULL,
+  osm_id bigint NOT NULL,
   name text,
   amenity text,
   cuisine text,
   lat double precision,
   lon double precision,
-  query_name text not null,
-  pulled_at timestamptz not null,
+  query_name text NOT NULL,
+  pulled_at timestamptz NOT NULL,
   tags jsonb,
   raw jsonb,
-  primary key (osm_type, osm_id)
+  PRIMARY KEY (osm_type, osm_id)
 );
 
-create index if not exists idx_stg_osm_poi_query
-  on stg_osm_poi (query_name, pulled_at desc);
+-- If you were adding geom before, keep it:
+ALTER TABLE stg_osm_poi
+ADD COLUMN IF NOT EXISTS geom geometry(Point, 4326);
 
+-- POI -> ZCTA mapping
+CREATE TABLE IF NOT EXISTS stg_poi_zcta (
+  osm_type text NOT NULL,
+  osm_id bigint NOT NULL,
+  zcta5 text NOT NULL,
+  PRIMARY KEY (osm_type, osm_id)
+);
 
--- MART: demand output
-create table if not exists mart_demand (
-  zip text not null,
-  year int not null,
-  term text not null,
+-- MART: competitors
+CREATE TABLE IF NOT EXISTS mart_competitors (
+  zcta5 text NOT NULL,
+  business_type text NOT NULL,
+  competitor_count int NOT NULL,
+  computed_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (zcta5, business_type)
+);
+
+-- MART: demand
+CREATE TABLE IF NOT EXISTS mart_demand (
+  zcta5 text NOT NULL,
+  year int NOT NULL,
+  business_type text NOT NULL,
   population int,
   median_household_income int,
   competitor_count int,
   demand_score numeric,
-  computed_at timestamptz not null default now(),
-  primary key (zip, year, term)
+  computed_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (zcta5, year, business_type)
 );

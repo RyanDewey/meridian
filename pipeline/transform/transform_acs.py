@@ -1,5 +1,5 @@
 import json
-from pipeline.db import get_conn
+from db import get_conn
 from dotenv import load_dotenv
 
 load_dotenv()

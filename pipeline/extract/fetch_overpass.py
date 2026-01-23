@@ -6,7 +6,7 @@ from typing import Dict, Any, Optional, Tuple
 import requests
 from dotenv import load_dotenv
 
-from pipeline.db import get_conn
+from db import get_conn
 
 load_dotenv()
 
