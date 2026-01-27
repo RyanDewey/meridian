@@ -1,4 +1,4 @@
-# Meridian 🧭
+# Meridian
 
 **Meridian** is an end-to-end data pipeline for measuring, analyzing, and visualizing **local business demand**.
 
