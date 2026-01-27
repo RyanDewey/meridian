@@ -2,7 +2,7 @@ from extract.fetch_acs import run as extract_acs
 from extract.fetch_overpass import run_example_san_clemente_bbox as extract_overpass
 from transform.transform_acs import transform_latest_acs
 from transform.transform_overpass import transform_overpass_to_staging
-from transform.run_sql import run_sql_dir
+from pipeline.utils.run_sql import run_sql_dir
 
 
 # Main function to call all other functions
