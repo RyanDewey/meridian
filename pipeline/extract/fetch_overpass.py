@@ -6,7 +6,7 @@ from typing import Dict, Any, Optional, Tuple
 import requests
 from dotenv import load_dotenv
 
-from db import get_conn
+from utils.db import get_conn
 
 load_dotenv()
 
@@ -164,7 +164,7 @@ def save_raw_overpass(
 def run_example_san_clemente_bbox():
     # San Clemente-ish bounding box (rough MVP).
     # You can adjust later or derive bbox from ZIP polygons.
-    south, west, north, east = 33.39, -117.68, 33.47, -117.56
+    south, west, north, east = 33.396754, -117.751671,33.650911, -117.576577
 
     query_name = "chinese_restaurants_san_clemente_bbox"
     query_params = {

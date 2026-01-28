@@ -2,7 +2,7 @@ from extract.fetch_acs import run as extract_acs
 from extract.fetch_overpass import run_example_san_clemente_bbox as extract_overpass
 from transform.transform_acs import transform_latest_acs
 from transform.transform_overpass import transform_overpass_to_staging
-from pipeline.utils.run_sql import run_sql_dir
+from utils.run_sql import run_sql_dir
 
 
 # Main function to call all other functions
@@ -10,7 +10,8 @@ def run_pipeline():
 
     # Define constant arguments
     ACS_YEAR = 2023
-    ZIPS = [92672, 92673, 92624, 92675, 92629]
+    ZIPS = [92672, 92673, 92624, 92675, 92629, 92618, 92630, 92656, 92677, 92688, 92691, 92694]
+
 
     SQL_DIR = "transform/sql"
     SQL_STEPS = [

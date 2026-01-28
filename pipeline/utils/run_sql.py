@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from db import get_conn
+from utils.db import get_conn
 
 def run_sql_file(path: str) -> None:
     sql = Path(path).read_text(encoding="utf-8")

@@ -1,7 +1,6 @@
 import requests
-import pandas as pd
 import os
-from db import get_conn
+from utils.db import get_conn
 import json
 from dotenv import load_dotenv
 
